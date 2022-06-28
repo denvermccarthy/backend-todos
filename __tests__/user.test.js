@@ -28,6 +28,13 @@ describe('user routes', () => {
       message: 'Successfully signed in',
     });
   });
+  it('delete to /session deletes the user session', async () => {
+    const agent = await request.agent(app);
+    await agent.post('/api/v1/users').send(mockUser);
+    await agent.post('/api/v1/users/session').send(mockUser);
+    const resp = await agent.delete('/api/v1/users/session');
+    expect(resp.status).toBe(200);
+  });
   afterAll(() => {
     pool.end();
   });
