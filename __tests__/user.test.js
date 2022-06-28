@@ -19,6 +19,15 @@ describe('user routes', () => {
       email: mockUser.email,
     });
   });
+  it('post to /users/session should sign a user in', async () => {
+    const agent = await request.agent(app);
+    await agent.post('/api/v1/users').send(mockUser);
+    const res = await agent.post('/api/v1/users/session').send(mockUser);
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({
+      message: 'Successfully signed in',
+    });
+  });
   afterAll(() => {
     pool.end();
   });
