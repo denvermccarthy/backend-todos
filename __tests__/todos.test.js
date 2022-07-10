@@ -61,9 +61,17 @@ describe('user routes', () => {
     const resp = await agent
       .put(`/api/v1/todos/${todo.id}`)
       .send({ done: true });
-    console.log(resp.body);
     expect(resp.status).toBe(200);
     expect(resp.body).toEqual({ ...todo, done: true });
+  });
+  test('DELETE to /todo/:id should delete a todo', async () => {
+    const [agent] = await registerAndLogin();
+    const todo = {
+      todo: 'Clean my room',
+    };
+    const { body: todoRes } = await agent.post('/api/v1/todos').send(todo);
+    const resp = await agent.delete(`/api/v1/todos/${todoRes.id}`);
+    expect(resp.status).toBe(200);
   });
   afterAll(() => {
     pool.end();
