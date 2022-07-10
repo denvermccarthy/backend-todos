@@ -32,7 +32,19 @@ describe('user routes', () => {
       done: expect.any(Boolean),
     });
   });
-
+  test('POST to /todos should post a todo', async () => {
+    const [agent, user] = await registerAndLogin();
+    const todo = {
+      todo: 'Clean my room',
+    };
+    const res = await agent.post('/api/v1/todos').send(todo);
+    expect(res.body).toEqual({
+      id: expect.any(String),
+      userId: user.id,
+      todo: todo.todo,
+      done: false,
+    });
+  });
   afterAll(() => {
     pool.end();
   });
