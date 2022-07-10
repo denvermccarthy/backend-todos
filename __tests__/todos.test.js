@@ -21,9 +21,10 @@ const registerAndLogin = async () => {
   return [agent, user.body];
 };
 const createDummyData = async () => {
-  const userData = await registerAndLogin();
-  await Promise.all(todos.map((todo) => Todo.insertTodo(todo)));
-  return userData;
+  const [agent, user] = await registerAndLogin();
+  const promises = todos.map((todo) => agent.post('/api/v1/todos').send(todo));
+  await Promise.all(promises);
+  return [agent, user];
 };
 
 describe('user routes', () => {
@@ -36,7 +37,7 @@ describe('user routes', () => {
     expect(res.body.length > 0).toEqual(true);
     expect(res.body[0]).toEqual({
       id: expect.any(String),
-      userId: expect.any(Number),
+      userId: expect.any(String),
       todo: expect.any(String),
       done: expect.any(Boolean),
     });
