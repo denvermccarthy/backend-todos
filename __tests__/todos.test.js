@@ -2,6 +2,7 @@ const pool = require('../lib/utils/pool');
 const setup = require('../data/setup');
 const request = require('supertest');
 const app = require('../lib/app');
+const Todo = require('../lib/models/Todo');
 const mockUser = {
   email: 'test@testing.net',
   password: 'password',
@@ -53,6 +54,18 @@ describe('user routes', () => {
       todo: todo.todo,
       done: false,
     });
+  });
+  test('PUT to /todo/:id should update a todo', async () => {
+    const [agent, user] = await registerAndLogin();
+    const todo = await Todo.insert({
+      todo: 'Clean room',
+      userId: user.id,
+    });
+    const resp = await agent
+      .put(`/api/v1/todos/${todo.id}`)
+      .send({ done: true });
+    expect(resp.status).toBe(200);
+    expect(resp.body).toEqual({ ...todo, done: true });
   });
   afterAll(() => {
     pool.end();
