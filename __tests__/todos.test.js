@@ -27,6 +27,7 @@ describe('user routes', () => {
     expect(res.body.length > 0).toEqual(true);
     expect(res.body[0]).toEqual({
       id: expect.any(String),
+      userId: expect.any(Number),
       todo: expect.any(String),
       done: expect.any(Boolean),
     });
