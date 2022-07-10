@@ -23,8 +23,8 @@ const registerAndLogin = async () => {
 const createDummyData = async () => {
   const [agent, user] = await registerAndLogin();
   const promises = todos.map((todo) => agent.post('/api/v1/todos').send(todo));
-  await Promise.all(promises);
-  return [agent, user];
+  const resp = await Promise.all(promises);
+  return [agent, user, resp];
 };
 
 describe('user routes', () => {
@@ -56,14 +56,12 @@ describe('user routes', () => {
     });
   });
   test('PUT to /todo/:id should update a todo', async () => {
-    const [agent, user] = await registerAndLogin();
-    const todo = await Todo.insert({
-      todo: 'Clean room',
-      userId: user.id,
-    });
+    const [agent, , data] = await createDummyData();
+    const todo = data[0].body;
     const resp = await agent
       .put(`/api/v1/todos/${todo.id}`)
       .send({ done: true });
+    console.log(resp.body);
     expect(resp.status).toBe(200);
     expect(resp.body).toEqual({ ...todo, done: true });
   });
