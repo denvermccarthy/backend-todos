@@ -35,6 +35,19 @@ describe('user routes', () => {
     const resp = await agent.delete('/api/v1/users/session');
     expect(resp.status).toBe(200);
   });
+
+  test('get to /me should return the user data', async () => {
+    const agent = await request.agent(app);
+    await agent.post('/api/v1/users').send(mockUser);
+    await agent.post('/api/v1/users/session').send(mockUser);
+    const res = await agent.get('/api/v1/users/me');
+    expect(res.body).toEqual({
+      id: expect.any(String),
+      email: mockUser.email,
+      exp: expect.any(Number),
+      iat: expect.any(Number),
+    });
+  });
   afterAll(() => {
     pool.end();
   });
